@@ -29,7 +29,7 @@ def retry(cash, beth):
     if x == 1:
         apuesta(cash, beth)
     elif x == 2:
-        round()
+        round(1, beth, cash)
 def balance():
     cash = int(input("\nCantidad de dinero disponible: $"))
     return cash
