@@ -81,45 +81,68 @@ class Game():
         elif x == ord('4'):
             self.hardway += int(float(betinput))
         elif x == ord('5'):
+            self.p.wallet += int(float(betinput))
             self.main_menu()
         else:
-            self.bet_menu()
+            self.add_bet()
 
         self.screen.refresh()
-        self.dice()
+        self.main_menu()
 
     def rule(self):
-        if point == 0:
-            if roll == 7 or roll == 11:
+        if self.point == 0:
+            if self.roll == 7 or self.roll == 11:
+                self.screen.addstr(6, 110, "Pass")
                 self.p.wallet += self.passline*2
                 self.passline = 0
                 self.nopassline = 0
                 self.p.wallet += self.field*2
-            elif roll == 2 or roll == 3 or roll == 12:
+            elif self.roll == 2 or self.roll == 3 or self.roll == 12:
                 self.passline = 0
                 self.p.wallet += self.nopassline*2
-                if roll == 2 or roll == 12:
+                self.screen.addstr(6, 110, "Crap")
+                if self.roll == 2 or self.roll == 12:
                     self.p.wallet += self.field*3
                     self.p.wallet += self.hardway*8
-                elif roll == 3:
+                elif self.roll == 3:
                     self.p.wallet += self.field*2
                     self.p.wallet += self.hardway*10
             else:
-                if roll == 4:
+                self.point = self.roll
+                if self.roll == 4:
                     self.p.wallet += self.field*2
                     self.p.wallet += self.hardway*8
-                elif roll == 5:
+                    self.field = 0
+                    self.hardway = 0
+                elif self.roll == 5:
                     self.field = 0
                     self.p.wallet += self.hardway*8
-                elif roll== 6 or roll == 8:
+                    self.hardway = 0
+                elif self.roll== 6 or self.roll == 8:
                     self.field = 0
                     self.p.wallet += self.hardway*10
-                elif roll == 9:
+                    self.hardway = 0
+                elif self.roll == 9:
                     self.p.wallet += self.field*2
                     self.hardway = 0
-                elif roll == 10:
+                    self.field = 0
+                elif self.roll == 10:
                     self.p.wallet += self.field*2
                     self.p.wallet += self.hardway*8
+                    self.field = 0
+                    self.hardway = 0
+        elif self.point != 0:
+            if self.point == self.roll:
+                self.p.wallet += self.passline
+                self.passline = 0
+                self.nopassline = 0
+                self.point = 0
+            elif self.roll == 7:
+                self.passline = 0
+                self.nopassline = 0
+                self.field = 0
+                self.hardway = 0
+                self.point = 0
         self.main_menu()
 
 
@@ -128,9 +151,7 @@ class Game():
         self.base_screen()
         self.screen.refresh()
         self.roll = self.dado1 + self.dado2
-        if self.point == 0:
-            self.point = self.roll
-        self.main_menu()
+        self.rule()
 
     def main_menu(self):
         self.base_screen()
