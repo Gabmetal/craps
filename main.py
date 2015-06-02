@@ -1,5 +1,6 @@
 import curses
 import random
+
 CFG_INITMONEY = 1000
 
 class Player():
@@ -17,17 +18,19 @@ class Game():
     nopassline = 0
     field = 0
     hardway = 0
+
 #Inicio del programa.
     def start(self):
         self.p.wallet = CFG_INITMONEY
         self.screen.border(0)
         self.screen.refresh()
         self.loop()
+
 #Pantalla base
     def base_screen(self):
         self.screen.clear()
         self.screen.border(0)
-        self.screen.addstr(2, 2, "PyCraps Game 0.1 Alpha - Gabriel Cavallo")
+        self.screen.addstr(2, 2, "PyCraps Game 1.0.0-Alpha - Gabriel Cavallo")
         self.screen.addstr(2, 100, "Billetera $")
         self.screen.addstr(2, 112, str(self.p.wallet))
         self.screen.addstr(4, 100, "Dado 1:")
@@ -47,6 +50,17 @@ class Game():
         self.screen.addstr(13, 117, str(self.field))
         self.screen.addstr(14, 100, "HardWay       $")
         self.screen.addstr(14, 117, str(self.hardway))
+        if self.point == 0:
+            if self.roll == 7 or self.roll == 11:
+                self.screen.addstr(6, 112, "Pass")
+                self.screen.refresh()
+            elif self.roll == 2 or self.roll == 3 or self.roll == 12:
+                self.screen.addstr(6, 112, "Crap")
+        elif self.point != 0:
+            if self.roll == 7:
+                self.screen.addstr(6, 112, "Perdiste!")
+        self.screen.refresh()
+
 #Agregar dinero a la billetera.
     def add_wallet(self):
         self.base_screen()
@@ -55,13 +69,13 @@ class Game():
         walletinput = self.screen.getstr(6, 4, 60)
         self.p.wallet += int(float(walletinput))
         self.main_menu()
+
 #Realizar apuestas.
     def add_bet(self):
         self.base_screen()
         self.screen.addstr(4, 4, "Ingrese la Cantidad en Dinero Que Quiere Apostar")
         self.screen.refresh()
         betinput = self.screen.getstr(6, 4, 60)
-        self.screen.refresh()
         self.p.wallet -= int(float(betinput))
         self.screen.addstr(4, 4, "En que modalidad quiere apostar?")
         self.screen.addstr(5, 4, "1 - Passline")
@@ -88,11 +102,25 @@ class Game():
 
         self.screen.refresh()
         self.main_menu()
+
 #Determina si se gana o se pierde y establece el punto.
     def rule(self):
-        if self.point == 0:
+        if self.point != 0:
+            if self.point == self.roll:
+                self.p.wallet += (self.passline*2)
+                self.passline = 0
+                self.nopassline = 0
+                self.point = 0
+            elif self.roll == 7:
+                self.passline = 0
+                self.nopassline = 0
+                self.field = 0
+                self.hardway = 0
+                self.point = 0
+            self.screen.refresh()
+            self.main_menu()
+        elif self.point == 0:
             if self.roll == 7 or self.roll == 11:
-                self.screen.addstr(6, 110, "Pass")
                 self.p.wallet += self.passline*2
                 self.passline = 0
                 self.nopassline = 0
@@ -100,7 +128,6 @@ class Game():
             elif self.roll == 2 or self.roll == 3 or self.roll == 12:
                 self.passline = 0
                 self.p.wallet += self.nopassline*2
-                self.screen.addstr(6, 110, "Crap")
                 if self.roll == 2 or self.roll == 12:
                     self.p.wallet += self.field*3
                     self.p.wallet += self.hardway*8
@@ -108,7 +135,6 @@ class Game():
                     self.p.wallet += self.field*2
                     self.p.wallet += self.hardway*10
             else:
-                self.point = self.roll
                 if self.roll == 4:
                     self.p.wallet += self.field*2
                     self.p.wallet += self.hardway*8
@@ -131,19 +157,8 @@ class Game():
                     self.p.wallet += self.hardway*8
                     self.field = 0
                     self.hardway = 0
-        elif self.point != 0:
-            if self.point == self.roll:
-                self.p.wallet += self.passline
-                self.passline = 0
-                self.nopassline = 0
-                self.point = 0
-            elif self.roll == 7:
-                self.passline = 0
-                self.nopassline = 0
-                self.field = 0
-                self.hardway = 0
-                self.point = 0
-        self.main_menu()
+                self.point = self.roll
+                self.main_menu()
 
 #Tira de dados.
     def dice(self):
@@ -152,6 +167,7 @@ class Game():
         self.screen.refresh()
         self.roll = self.dado1 + self.dado2
         self.rule()
+
 #Menu principal
     def main_menu(self):
         self.base_screen()
