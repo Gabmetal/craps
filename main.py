@@ -17,13 +17,13 @@ class Game():
     nopassline = 0
     field = 0
     hardway = 0
-
+#Inicio del programa.
     def start(self):
         self.p.wallet = CFG_INITMONEY
         self.screen.border(0)
         self.screen.refresh()
         self.loop()
-
+#Pantalla base
     def base_screen(self):
         self.screen.clear()
         self.screen.border(0)
@@ -47,7 +47,7 @@ class Game():
         self.screen.addstr(13, 117, str(self.field))
         self.screen.addstr(14, 100, "HardWay       $")
         self.screen.addstr(14, 117, str(self.hardway))
-
+#Agregar dinero a la billetera.
     def add_wallet(self):
         self.base_screen()
         self.screen.addstr(4, 4, "Ingrese la Cantidad en Dinero Que Quiere Agregar")
@@ -55,7 +55,7 @@ class Game():
         walletinput = self.screen.getstr(6, 4, 60)
         self.p.wallet += int(float(walletinput))
         self.main_menu()
-
+#Realizar apuestas.
     def add_bet(self):
         self.base_screen()
         self.screen.addstr(4, 4, "Ingrese la Cantidad en Dinero Que Quiere Apostar")
@@ -88,7 +88,7 @@ class Game():
 
         self.screen.refresh()
         self.main_menu()
-
+#Determina si se gana o se pierde y establece el punto.
     def rule(self):
         if self.point == 0:
             if self.roll == 7 or self.roll == 11:
@@ -145,14 +145,14 @@ class Game():
                 self.point = 0
         self.main_menu()
 
-
+#Tira de dados.
     def dice(self):
         self.dado1, self.dado2 = random.randint(1,6), random.randint(1,6)
         self.base_screen()
         self.screen.refresh()
         self.roll = self.dado1 + self.dado2
         self.rule()
-
+#Menu principal
     def main_menu(self):
         self.base_screen()
         self.screen.addstr(4, 4, "1 - Agregar Dinero")
@@ -171,7 +171,7 @@ class Game():
         elif x == ord('9'):
             curses.endwin()
         else:
-            self.main_menu()
+            self.loop()
 
 
     def loop(self):
